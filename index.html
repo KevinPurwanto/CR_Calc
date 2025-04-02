@@ -1,16 +1,430 @@
+
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Crystal Realms Shard Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        body {
+            background: url('https://your-background-image-url.com') no-repeat center center/cover;
+            font-family: 'Press Start 2P', cursive;
+            color: #ff66cc;
+            text-align: center;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 50px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #222;
+            border: 2px solid #ff66cc;
+            color: white;
+            margin: 0 5px;
+        }
+        .tab.active {
+            background: #ff66cc;
+            color: black;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+        img {
+            width: 50px;
+            height: 50px;
+            display: block;
+            margin: auto;
+        }
+        button {
+            background: #ff66cc; /* Warna pink sesuai tema */
+            color: black;
+            font-family: 'Press Start 2P', cursive;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff33aa; /* Warna lebih gelap saat dihover */
+            transform: scale(1.1);
+        }
+
+        .select2-container {
+    width: 200px !important; /* Ubah sesuai kebutuhan */
+        }
+
+        input[type="number"] {
+    width: 80px; /* Lebar input */
+    padding: 5px; /* Padding dalam */
+    font-size: 16px; /* Ukuran teks */
+    border: 2px solid #ff66cc; /* Warna border */
+    border-radius: 5px; /* Membuat sudut lebih halus */
+    background-color: black; /* Latar belakang */
+    color: white; /* Warna teks */
+    text-align: center; /* Pusatkan angka */
+}
+
+/* Untuk Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Untuk Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]:hover {
+    border-color: #ff33aa; /* Warna border saat hover */
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #ff33aa;
+    box-shadow: 0 0 10px #ff33aa;
+}
+
+.select2-dropdown {
+    font-size: 12px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    font-size: 14px;
+    color: white;
+}
+
+
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link rel="icon" type="image/png" href="image/logocr.png">
 </head>
 <body>
-    <h1>Hello, World! 👋</h1>
-    <p>Selamat datang di website pertama saya di Vercel.</p>
-    <button onclick="sayHello()">Klik Aku</button>
+    <div class="container">
+        <h1>Crystal Realms Shard Calculator</h1>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('multi')">Multi Block</div>
+            <div class="tab" onclick="switchTab('single')">Single Block</div>
+        </div>
+        
+        <div id="multi" class="tab-content active">
+            <table>
+                <tbody id="blockTable"></tbody>
+            </table>
+            <br>
+            <button onclick="calculateShards()">Calculate</button>
+            <p id="result"></p>
+        </div>
+        
+        <div id="single" class="tab-content">
+            <h3>Single Block Calculation</h3>
+            <select id="singleBlock" onchange="updateSingleImage()"></select>
+            <br>
+            <img id="singleBlockImage" src="" alt="Block Image">
+            <br>
+            <input type="number" id="singleQuantity" min="1" value="1">
+            <button onclick="calculateSingleBlock()">Calculate</button>
+            <p id="singleResult"></p>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
+    <script>
+
+
+        document.querySelectorAll("button").forEach(btn => {
+            btn.addEventListener("mousedown", function () {
+                this.style.transform = "scale(0.9)";
+            });
+            btn.addEventListener("mouseup", function () {
+                this.style.transform = "scale(1)";
+            });
+        });
+
+        const items = {
+                "Block Non": [
+                    0,
+                    0
+                ],
+                "Anvil": [
+                    24.0,
+                    27.2
+                ],
+                "Big Bouncy Mushroom": [
+                    27.5,
+                    28.3
+                ],
+                "Community Board": [
+                    20.2,
+                    20.6
+                ],
+                "Copper Block": [
+                    8.5,
+                    9.6
+                ],
+                "Copper Ore": [
+                    5.1,
+                    5.8
+                ],
+                "Couldron": [
+                    130,
+                    200
+                ],
+                "Cow Skull": [
+                    7.2,
+                    7.7
+                ],
+                "Crystal Ball": [
+                    48,
+                    54
+                ],
+                "Eyeball in a Jar": [
+                    15.7,
+                    16.4
+                ],
+                "Giant Eyeball": [
+                    32.0,
+                    36.5
+                ],
+                "Gold Block": [
+                    13.0,
+                    14.6
+                ],
+                "Gold Ore": [
+                    7.3,
+                    7.6
+                ],
+                "Ice Block": [
+                    3.0,
+                    3.2
+                ],
+                "Iron Block": [
+                    9.2,
+                    10.2
+                ],
+                "Iron Chain": [
+                    3.0,
+                    3.2
+                ],
+                "Iron Fence": [
+                    9.1,
+                    10.9
+                ],
+                "Iron Ore": [
+                    5.2,
+                    5.7
+                ],
+                "Mechanical Background": [
+                    5.2,
+                    6.5
+                ],
+                "Mechanical Block": [
+                    9.4,
+                    11
+                ],
+                "Polished Bone Block": [
+                    5.1,
+                    5.4
+                ],
+                "Slime Block": [
+                    6.1,
+                    6.5
+                ],
+                "Spike": [
+                    5.1,
+                    6.1
+                ],
+                "Toilet": [
+                    33.0,
+                    38.0
+                ],
+                "Unstable Stone Brick": [
+                    5.0,
+                    5.3
+                ]
+            }
+        
+            const itemImages = {
+            "Block Non": "image/block_none.png",
+            "Anvil": "image/Anvil.png",
+            "Big Bouncy Mushroom": "image/Big_Bouncy_Mushroom.png",
+            "Community Board": "image/Community_Board.png",
+            "Copper Block": "image/Copper_Block.png",
+            "Copper Ore": "image/Copper_Ore.png",
+            "Couldron": "image/Couldron.png",
+            "Cow Skull": "image/Cow_Skull.png",
+            "Crystal Ball": "image/Crystal_Ball.png",
+            "Eyeball in a Jar": "image/Eyeball_in_a_Jar.png",
+            "Giant Eyeball": "image/Giant_Eyeball.png",
+            "Gold Block": "image/Gold_Block.png",
+            "Gold Ore": "image/Gold_Ore.png",
+            "Ice Block": "image/Ice_Block.png",
+            "Iron Block": "image/Iron_Block.png",
+            "Iron Chain": "image/Iron_Chain.png",
+            "Iron Fence": "image/Iron_Fence.png",
+            "Iron Ore": "image/Iron_Ore.png",
+            "Mechanical Background": "image/Mechanical_Background.png",
+            "Mechanical Block": "image/Mechanical_Block.png",
+            "Polished Bone Block": "image/Polished_Bone_Block.png",
+            "Slime Block": "image/Slime_Block.png",
+            "Spike": "image/Spike.png",
+            "Toilet": "image/Toilet.png",
+            "Unstable Stone Brick": "image/Unstable_Stone_Brick.png"
+        };
+
+        function populateDropdowns() {
+            let table = document.getElementById("blockTable");
+            let singleBlockSelect = document.getElementById("singleBlock");
+            
+            let blocks = Object.keys(items);
+            blocks.forEach(block => {
+                let option = document.createElement("option");
+                option.value = block;
+                option.textContent = block;
+                singleBlockSelect.appendChild(option);
+            });
+            
+            for (let i = 0; i < 3; i++) {
+                let row = document.createElement("tr");
+                for (let j = 0; j < 3; j++) {
+                    let cell = document.createElement("td");
+                    let img = document.createElement("img");
+                    img.src = "image/block_none.png";
+                    img.alt = "Block Image";
+                    
+                    let select = document.createElement("select");
+                    select.classList.add("block-select");
+                    select.onchange = function() { img.src = itemImages[select.value]; };
+                    blocks.forEach(block => {
+                        let option = document.createElement("option");
+                        option.value = block;
+                        option.textContent = block;
+                        select.appendChild(option);
+                    });
+                    
+                    let input = document.createElement("input");
+                    input.type = "number";
+                    input.min = "1";
+                    input.value = "1";
+
+                    input.onblur = function() {
+                if (input.value === "" || input.value <= 0) {
+                    input.value = 1;
+                }
+            };
+                    
+                    cell.appendChild(img);
+                    cell.appendChild(document.createElement("br"));
+                    cell.appendChild(select);
+                    cell.appendChild(document.createElement("br"));
+                    cell.appendChild(input);
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+            
+            $(".block-select").select2();
+            $("#singleBlock").select2();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(tabEl => tabEl.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+
+        function updateSingleImage() {
+            let selectedBlock = document.getElementById("singleBlock").value;
+            document.getElementById("singleBlockImage").src = itemImages[selectedBlock];
+        }
+        function calculateShards() {
+            let totalMinShards = 0;
+            let totalMaxShards = 0;
+            let selects = document.querySelectorAll("#blockTable select");
+            let inputs = document.querySelectorAll("#blockTable input");
+            
+            selects.forEach((select, index) => {
+                let block = select.value;
+                let [minDrop, maxDrop] = items[block];
+                let quantity = parseInt(inputs[index].value);
+                
+                totalMinShards += minDrop * quantity;
+                totalMaxShards += maxDrop * quantity;
+            });
+            
+            // document.getElementById("result").innerText = `Total Shards: ${totalMinShards} - ${totalMaxShards}`;
+
+
+        document.getElementById("result").innerHTML = `
+        <span style="display: inline-flex; align-items: center;">
+            Estimate Shards: ${totalMinShards} - ${totalMaxShards}
+            <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
+
+        </span>
+                    <br>
+        <span style="display: inline-flex; align-items: center;">
+            Estimate Token (Per 15 Shard): ${(totalMinShards / 15).toFixed(2)} - ${(totalMaxShards / 15).toFixed(2)}
+            <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
+        </span>
+        `;
+
+
+        }
+        function calculateSingleBlock() {
+            let selectedBlock = document.getElementById("singleBlock").value;
+            let quantity = parseInt(document.getElementById("singleQuantity").value);
+            let [minDrop, maxDrop] = items[selectedBlock];
+            
+            let totalMin = minDrop * quantity;
+            let totalMax = maxDrop * quantity;
+            
+            // document.getElementById("singleResult").innerText = `Shards: ${totalMin} - ${totalMax}`;
+
+            document.getElementById("singleResult").innerHTML = `
+        <span style="display: inline-flex; align-items: center;">
+            Estimate Shards: ${totalMin} - ${totalMax}
+            <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
+        </span>
+        <br>
+        <span style="display: inline-flex; align-items: center;">
+            Estimate Token (Per 15 Shard): ${(totalMin / 15).toFixed(2)} - ${(totalMax / 15).toFixed(2)}
+            <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
+        </span>
+        `;
+        
+        }
+        populateDropdowns();
+        updateSingleImage();
+
+
+
+    </script>
 </body>
 </html>
