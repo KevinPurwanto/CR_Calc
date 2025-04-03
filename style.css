@@ -1,0 +1,119 @@
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, #ff66cc, #d147a3, #b366ff, #8c52ff);
+    background-size: 400% 400%;
+    animation: gradientAnimation 10s ease infinite;
+    z-index: -1;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+#particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Di atas background, tapi tetap di bawah konten */
+    pointer-events: none; /* Supaya tidak mengganggu klik pada konten */
+}
+
+    /* background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #ff66cc); */
+
+
+/* Responsive Design using media queries */
+
+/* For tablets and smaller screens (up to 768px) */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .container {
+        padding: 10px;
+        margin-top: 30px;
+    }
+
+    .tabs {
+        flex-direction: column; /* Stack tabs vertically on small screens */
+    }
+
+    .tab {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .tab-content {
+        padding: 10px;
+    }
+
+    /* Make the input fields and select elements full-width */
+    input[type="number"], select {
+        width: 100%;
+    }
+
+    button {
+        width: 100%; /* Make buttons full-width */
+    }
+
+    img {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* For mobile screens (up to 480px) */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    .container {
+        padding: 8px;
+        margin-top: 20px;
+    }
+
+    .tabs {
+        flex-direction: column; /* Stack tabs vertically */
+    }
+
+    .tab {
+        padding: 8px;
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .tab-content {
+        padding: 8px;
+    }
+
+    input[type="number"], select {
+        width: 100%;
+    }
+
+    button {
+        padding: 12px 20px;
+        width: 100%;
+    }
+
+    img {
+        width: 35px;
+        height: 35px;
+    }
+}

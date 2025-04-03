@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crystal Realms Shard Calculator</title>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         body {
-            background: url('https://your-background-image-url.com') no-repeat center center/cover;
             font-family: 'Press Start 2P', cursive;
             color: #ff66cc;
             text-align: center;
@@ -121,14 +120,18 @@ input[type="number"]:focus {
 
 
     </style>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <link rel="icon" type="image/png" href="image/logocr.png">
 </head>
 <body>
+    <div class="background"></div>
+    <canvas id="particles"></canvas>
     <div class="container">
         <h1>Crystal Realms Shard Calculator</h1>
+        <h6>By Kevin P</h6>
         <div class="tabs">
             <div class="tab active" onclick="switchTab('multi')">Multi Block</div>
             <div class="tab" onclick="switchTab('single')">Single Block</div>
@@ -141,6 +144,9 @@ input[type="number"]:focus {
             <br>
             <button onclick="calculateShards()">Calculate</button>
             <p id="result"></p>
+            <br>
+            <h6>Shard reference from world EXPERIMENT by TITAN</h6>
+            <h6>Disclaimer: This calculator is not 100% accurate, Use at your own risk.</h6>
         </div>
         
         <div id="single" class="tab-content">
@@ -149,9 +155,12 @@ input[type="number"]:focus {
             <br>
             <img id="singleBlockImage" src="" alt="Block Image">
             <br>
-            <input type="number" id="singleQuantity" min="1" value="1">
+            <input type="number" id="singleQuantity" min="0" value="0">
             <button onclick="calculateSingleBlock()">Calculate</button>
             <p id="singleResult"></p>
+            <br>
+            <h6>Shard reference from world EXPERIMENT by TITAN</h6>
+            <h6>Disclaimer: This calculator is not 100% accurate, Use at your own risk.</h6>
         </div>
     </div>
 
@@ -212,7 +221,7 @@ input[type="number"]:focus {
                     32.0,
                     36.5
                 ],
-                "Gold Block": [
+                "Gold Bricks": [
                     13.0,
                     14.6
                 ],
@@ -264,7 +273,7 @@ input[type="number"]:focus {
                     33.0,
                     38.0
                 ],
-                "Unstable Stone Brick": [
+                "Unstable Stone Bricks Platform": [
                     5.0,
                     5.3
                 ]
@@ -277,12 +286,12 @@ input[type="number"]:focus {
             "Community Board": "image/Community_Board.png",
             "Copper Block": "image/Copper_Block.png",
             "Copper Ore": "image/Copper_Ore.png",
-            "Couldron": "image/Couldron.png",
+            "Couldron": "image/Cauldron.png",
             "Cow Skull": "image/Cow_Skull.png",
             "Crystal Ball": "image/Crystal_Ball.png",
-            "Eyeball in a Jar": "image/Eyeball_in_a_Jar.png",
+            "Eyeball in a Jar": "image/Eyeball_In_A_Jar.png",
             "Giant Eyeball": "image/Giant_Eyeball.png",
-            "Gold Block": "image/Gold_Block.png",
+            "Gold Bricks": "image/Gold_Bricks.png",
             "Gold Ore": "image/Gold_Ore.png",
             "Ice Block": "image/Ice_Block.png",
             "Iron Block": "image/Iron_Block.png",
@@ -295,63 +304,83 @@ input[type="number"]:focus {
             "Slime Block": "image/Slime_Block.png",
             "Spike": "image/Spike.png",
             "Toilet": "image/Toilet.png",
-            "Unstable Stone Brick": "image/Unstable_Stone_Brick.png"
+            "Unstable Stone Bricks Platform": "image/Unstable_Stone_Bricks_Platform.png"
         };
 
         function populateDropdowns() {
-            let table = document.getElementById("blockTable");
-            let singleBlockSelect = document.getElementById("singleBlock");
-            
-            let blocks = Object.keys(items);
-            blocks.forEach(block => {
-                let option = document.createElement("option");
-                option.value = block;
-                option.textContent = block;
-                singleBlockSelect.appendChild(option);
-            });
-            
-            for (let i = 0; i < 3; i++) {
-                let row = document.createElement("tr");
-                for (let j = 0; j < 3; j++) {
-                    let cell = document.createElement("td");
-                    let img = document.createElement("img");
-                    img.src = "image/block_none.png";
-                    img.alt = "Block Image";
-                    
-                    let select = document.createElement("select");
-                    select.classList.add("block-select");
-                    select.onchange = function() { img.src = itemImages[select.value]; };
-                    blocks.forEach(block => {
-                        let option = document.createElement("option");
-                        option.value = block;
-                        option.textContent = block;
-                        select.appendChild(option);
-                    });
-                    
-                    let input = document.createElement("input");
-                    input.type = "number";
-                    input.min = "1";
-                    input.value = "1";
+        let table = document.getElementById("blockTable");
+        let singleBlockSelect = document.getElementById("singleBlock");
+        
+        let blocks = Object.keys(items);
+        blocks.forEach(block => {
+            let option = document.createElement("option");
+            option.value = block;
+            option.textContent = block;
+            singleBlockSelect.appendChild(option);
+        });
+        
+        for (let i = 0; i < 2; i++) {
+            let row = document.createElement("tr");
+            for (let j = 0; j < 3; j++) {
+                let cell = document.createElement("td");
+                let img = document.createElement("img");
+                img.src = "image/block_none.png";
+                img.alt = "Block Image";
+                
+                let select = document.createElement("select");
+                select.classList.add("block-select");
+                select.onchange = function() { img.src = itemImages[select.value]; };
+                blocks.forEach(block => {
+                    let option = document.createElement("option");
+                    option.value = block;
+                    option.textContent = block;
+                    select.appendChild(option);
+                });
+                
+                let input = document.createElement("input");
+                input.type = "number";
+                input.min = "0";
+                input.value = "0";
+                input.onblur = function() {
+                    if (input.value === "" || input.value <= 0) {
+                        input.value = 0;
+                    }
+                };
 
-                    input.onblur = function() {
-                if (input.value === "" || input.value <= 0) {
-                    input.value = 1;
-                }
-            };
-                    
-                    cell.appendChild(img);
-                    cell.appendChild(document.createElement("br"));
-                    cell.appendChild(select);
-                    cell.appendChild(document.createElement("br"));
-                    cell.appendChild(input);
-                    row.appendChild(cell);
-                }
-                table.appendChild(row);
+                // Tombol +1
+                let btnPlus1 = document.createElement("button");
+                btnPlus1.textContent = "+1s";
+                btnPlus1.onclick = function () {
+                    input.value = parseInt(input.value) + 255;
+                };
+
+                // Tombol +4
+                let btnPlus4 = document.createElement("button");
+                btnPlus4.textContent = "+4s";
+                btnPlus4.onclick = function () {
+                    input.value = parseInt(input.value) + 1020;
+                };
+
+                cell.appendChild(img);
+                cell.appendChild(document.createElement("br"));
+                cell.appendChild(document.createElement("br"));
+                cell.appendChild(select);
+                cell.appendChild(document.createElement("br"));
+                cell.appendChild(input);
+                cell.appendChild(document.createElement("br"));
+                // cell.appendChild(document.createTextNode("\u00A0"));
+                cell.appendChild(btnPlus1); // Tambahkan tombol +1
+                cell.appendChild(document.createTextNode("\u00A0"));
+                cell.appendChild(btnPlus4); // Tambahkan tombol +4
+                row.appendChild(cell);
             }
-            
-            $(".block-select").select2();
-            $("#singleBlock").select2();
+            table.appendChild(row);
         }
+        
+        $(".block-select").select2();
+        $("#singleBlock").select2();
+    }
+
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(tabEl => tabEl.classList.remove('active'));
@@ -384,14 +413,14 @@ input[type="number"]:focus {
 
         document.getElementById("result").innerHTML = `
         <span style="display: inline-flex; align-items: center;">
-            Estimate Shards: ${totalMinShards} - ${totalMaxShards}
+            Estimate Shards: ${totalMinShards.toFixed(2)} - ${totalMaxShards.toFixed(2)}
             <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
 
         </span>
                     <br>
         <span style="display: inline-flex; align-items: center;">
             Estimate Token (Per 15 Shard): ${(totalMinShards / 15).toFixed(2)} - ${(totalMaxShards / 15).toFixed(2)}
-            <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
+            <img src="image/RealmToken.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
         </span>
         `;
 
@@ -404,18 +433,18 @@ input[type="number"]:focus {
             
             let totalMin = minDrop * quantity;
             let totalMax = maxDrop * quantity;
-            
+
             // document.getElementById("singleResult").innerText = `Shards: ${totalMin} - ${totalMax}`;
 
             document.getElementById("singleResult").innerHTML = `
         <span style="display: inline-flex; align-items: center;">
-            Estimate Shards: ${totalMin} - ${totalMax}
+            Estimate Shards: ${totalMin.toFixed(2)} - ${totalMax.toFixed(2)}
             <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
         </span>
         <br>
         <span style="display: inline-flex; align-items: center;">
             Estimate Token (Per 15 Shard): ${(totalMin / 15).toFixed(2)} - ${(totalMax / 15).toFixed(2)}
-            <img src="image/BlueShard.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
+            <img src="image/RealmToken.png" alt="Shard Icon" style="width: 50px; margin-left: 10px;">
         </span>
         `;
         
@@ -423,8 +452,123 @@ input[type="number"]:focus {
         populateDropdowns();
         updateSingleImage();
 
+        // Fungsi untuk menambah/mengurangi jumlah input
+        function updateValue(input, amount) {
+            let newValue = parseInt(input.value) + amount;
+            input.value = newValue < 0 ? 0 : newValue; // Pastikan nilai tidak kurang dari 0
+        }
+
+        // Ambil elemen input
+        let singleQuantityInput = document.getElementById("singleQuantity");
+
+
+        // Buat container untuk tombol
+        let btnContainer = document.createElement("div");
+        btnContainer.style.marginBottom = "10px"; // Beri jarak antara tombol dan input
+
+        // Tombol +1s
+        let btnPlus1s = document.createElement("button");
+        btnPlus1s.textContent = "+1s";
+        btnPlus1s.onclick = function () {
+            updateValue(singleQuantityInput, 255);
+        };
+
+        // Tombol +4s
+        let btnPlus4s = document.createElement("button");
+        btnPlus4s.textContent = "+4s";
+        btnPlus4s.onclick = function () {
+            updateValue(singleQuantityInput, 1020);
+        };
+
+        // Tombol -1s
+        let btnMin1s = document.createElement("button");
+        btnMin1s.textContent = "-1s";
+        btnMin1s.onclick = function () {
+            updateValue(singleQuantityInput, -255);
+        };
+
+        // Tombol -4s
+        let btnMin4s = document.createElement("button");
+        btnMin4s.textContent = "-4s";
+        btnMin4s.onclick = function () {
+            updateValue(singleQuantityInput, -1020);
+        };
+
+        // Tambahkan tombol ke dalam halaman
+
+        // let container = document.getElementById("singleQuantity").parentNode;
+        btnContainer.appendChild(btnMin1s);
+        btnContainer.appendChild(document.createTextNode("\u00A0"));
+        btnContainer.appendChild(btnMin4s);
+        btnContainer.appendChild(document.createTextNode("\u00A0"));
+        btnContainer.appendChild(document.createTextNode("\u00A0"));
+        btnContainer.appendChild(document.createTextNode("\u00A0"));
+        btnContainer.appendChild(btnPlus1s);
+        btnContainer.appendChild(document.createTextNode("\u00A0"));
+        btnContainer.appendChild(btnPlus4s);
+
+
+        // Masukkan container sebelum input
+        singleQuantityInput.parentNode.insertBefore(btnContainer, singleQuantityInput);
+
+
+
+
+                //hiasan bintang bintang
+                const canvas = document.getElementById("particles");
+
+                const ctx = canvas.getContext("2d");
+
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                let particlesArray = [];
+                const numParticles = 100;
+
+                class Particle {
+                    constructor() {
+                        this.x = Math.random() * canvas.width;
+                        this.y = Math.random() * canvas.height;
+                        this.size = Math.random() * 3;
+                        this.speedX = Math.random() * 2 - 1;
+                        this.speedY = Math.random() * 2 - 1;
+                    }
+                    update() {
+                        this.x += this.speedX;
+                        this.y += this.speedY;
+                        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                    }
+                    draw() {
+                        ctx.fillStyle = "rgba(255, 102, 204, 0.8)";
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                function initParticles() {
+                    for (let i = 0; i < numParticles; i++) {
+                        particlesArray.push(new Particle());
+                    }
+                }
+
+                function animateParticles() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    for (let particle of particlesArray) {
+                        particle.update();
+                        particle.draw();
+                    }
+                    requestAnimationFrame(animateParticles);
+                }
+
+
+                initParticles();
+                animateParticles();
+
 
 
     </script>
 </body>
 </html>
+
